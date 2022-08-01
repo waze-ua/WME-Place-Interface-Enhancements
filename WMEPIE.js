@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Place Interface Enhancements
 // @namespace    https://greasyfork.org/users/30701-justins83-waze
-// @version      2021.09.18.01
+// @version      2022.08.02.01
 // @description  Enhancements to various Place interfaces
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -122,17 +122,17 @@ var UpdateObject, MultiAction;
 
         var $section = $("<div>", {style:"padding:8px 16px", id:"WMEPIESettings"});
         $section.html([
-            '<h4 style="margin-bottom:0px;"><b>' + I18n.t('pie.prefs.title') + '</b></h4>',
-            '<h6 style="margin-top:0px;">' + curr_ver + '</h6>',
+            '<wz-overline>' + I18n.t('pie.prefs.title') + '</wz-overline>',
+            '<div>' + curr_ver + '</div>',
             '<fieldset id="fieldPlaceFilter" style="border: 1px solid silver; padding: 8px; border-radius: 4px;">',
-            '<legend style="margin-bottom:0px; border-bottom-style:none;width:auto;"><h4>' + I18n.t('pie.filter.PlaceFilterPanel') + '</h4></legend>',
+            '<legend style="margin-bottom:0px; border-bottom-style:none;width:auto;"><wz-label>' + I18n.t('pie.filter.PlaceFilterPanel') + '</wz-label></legend>',
             '<div class="controls-container pie-controls-container" id="divPlaceFilter">' + I18n.t('pie.filter.filter') + ' <input type="text" name="txtPlaceFilter" id="piePlaceFilter" style="border: 1px solid #000000"/></div>',
             '</br>',
             '<div class="controls-container pie-controls-container" id="divPlaceFilterOptions"><input type="radio" id="_rbHidePlaces" name="PlaceFilterToggle" checked><label for="_rbHidePlaces">' + I18n.t('pie.filter.Hide') + '</label><input type="radio" id="_rbOnlyShowPlaces" name="PlaceFilterToggle"><label for="_rbOnlyShowPlaces">' + I18n.t('pie.filter.Show') + '</label></div>',
             '</fieldset>',
 
             '<fieldset id="fieldPlacePanel" style="border: 1px solid silver; padding: 8px; border-radius: 4px;">',
-            '<legend style="margin-bottom:0px; border-bottom-style:none;width:auto;"><h4>' + I18n.t('pie.prefs.PropertiesPanel') + '</h4></legend>',
+            '<legend style="margin-bottom:0px; border-bottom-style:none;width:auto;"><wz-label>' + I18n.t('pie.prefs.PropertiesPanel') + '</wz-label></legend>',
             '<div class="controls-container pie-controls-container" id="divAreaPlaceSizeControls">',
             '<div id="divShowAreaPlaceSize" class="controls-container pie-controls-container"><input type="checkbox" id="_cbShowAreaPlaceSize" class="pieSettingsCheckbox" /><label for="_cbShowAreaPlaceSize">' + I18n.t('pie.prefs.ShowAreaPlaceSize') + '</label></div>',
             '<div id="divShowAreaPlaceSizeImperial"class="controls-container pie-controls-container" style="padding-left:20px;"><input type="checkbox" id="_cbShowAreaPlaceSizeImperial" class="pieSettingsCheckbox" disabled /><label for ="_cbShowAreaPlaceSizeImperial">' + I18n.t('pie.prefs.ShowImperial') + '</label></div>',
@@ -3010,7 +3010,7 @@ var UpdateObject, MultiAction;
                 var $PlaceCopyButton;
                 if(!_.includes(WazeWrap.getSelectedFeatures()[0].model.attributes.categories,"RESIDENCE_HOME")){
                     $PlaceCopyButton = $('<div style="float:right; z-index:100; cursor:pointer; top:0; right:0; margin-left:1px; margin-right:1px;" id="pieCopyPlaceButton" title="Creates a copy of this Place"><i class="fa fa-files-o fa-lg" aria-hidden="true"></i></div>');
-                    $('#venue-edit-general > form > div:nth-child(1) > div:nth-child(2) > label').after($PlaceCopyButton);
+                    $('#venue-edit-general wz-text-input[name="name"]').before($PlaceCopyButton);
 
                     $('#pieCopyPlaceButton').click(function(){
                         var PlaceObject = require("Waze/Feature/Vector/Landmark");
