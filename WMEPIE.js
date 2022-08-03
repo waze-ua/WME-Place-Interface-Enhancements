@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Place Interface Enhancements
 // @namespace    https://greasyfork.org/users/30701-justins83-waze
-// @version      2022.08.02.01
+// @version      2022.08.03.01
 // @description  Enhancements to various Place interfaces
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -34,6 +34,7 @@
 /* global require */
 /* global idbPVKeyval */
 /* eslint curly: ["warn", "multi-or-nest"] */
+/* jshint esversion: 11 */
 
 var UpdateObject, MultiAction;
 
@@ -66,13 +67,14 @@ var UpdateObject, MultiAction;
     {
         var drawPoly, PLSpotEstimatordrawControl, PLSpotEstimatorCalibrationdrawControl;
         var isDrawing;
-        var pointStyle = {
-            pointRadius: 6,
-            fillOpacity: 0,
-            strokeColor: '#00ece3',
-            strokeWidth: '2',
-            strokeLinecap: 'round'
-        };
+        // commented due to double definition (below)
+        //var pointStyle = {
+        //    pointRadius: 6,
+        //    fillOpacity: 0,
+        //    strokeColor: '#00ece3',
+        //    strokeWidth: '2',
+        //    strokeLinecap: 'round'
+        //};
 
         //Closest segment
         var lineStyleToNavPoint = {
@@ -214,7 +216,7 @@ var UpdateObject, MultiAction;
         await loadSettings();
 
         var style = new OpenLayers.Style({
-            pointRadius: "${pointRadius}",
+            //pointRadius: "${pointRadius}",  // (duplicated key, see below)
             label : "${labelText}",
             fontFamily: "Tahoma, Arial, Verdana",
             labelOutlineColor: settings.PlaceNameFontOutline,
@@ -238,11 +240,11 @@ var UpdateObject, MultiAction;
         W.map.addLayer(newPlaceLayer);
 
         PLSpotEstimatorLayer = new OpenLayers.Layer.Vector("PIEPLSpotEstimatorLayer",{displayInLayerSwitcher: false, uniqueName: "__PIEPLSpotEstimatorLayer"});
-		//W.map.addLayer(PLSpotEstimatorLayer);
+        //W.map.addLayer(PLSpotEstimatorLayer);
         PLSpotEstimatorLayer.setVisibility(true);
 
         PLSpotEstimatorCalibrationLayer= new OpenLayers.Layer.Vector("PIEPLSpotEstimatorCalibrationLayer",{displayInLayerSwitcher: false, uniqueName: "__PIEPLSpotEstimatorCalibrationLayer"});
-		//W.map.addLayer(PLSpotEstimatorCalibrationLayer);
+        //W.map.addLayer(PLSpotEstimatorCalibrationLayer);
         PLSpotEstimatorCalibrationLayer.setVisibility(true);
 
         showStopPointsLayer = new OpenLayers.Layer.Vector("PIEShowStopPointsLayer", {displayInLayerSwitcher: false, uniqueName: "__PIEShowStopPointsLayer"});
@@ -739,7 +741,7 @@ var UpdateObject, MultiAction;
 
 
         window.addEventListener("beforeunload", function() {
-		checkShortcutsChanged();
+        checkShortcutsChanged();
             //saveSettings();
         }, false);
 
@@ -920,7 +922,7 @@ var UpdateObject, MultiAction;
 
         //Button to quit
         let quit=document.createElement('button');
-        quit.innerHTML=I18n.translations[I18n.currentLocale()].merge_places.actions.cancel
+        quit.innerHTML=I18n.translations[I18n.currentLocale()].merge_places.actions.cancel;
         $(quit).css({'float':'right','height':'23px','line-height':'23px','margin':'3px','padding':'0 10px','background-color':'#26bae8','color':'white','border':'0','border-radius':'13px'});
         quit.onclick = hide_visio;
         topbar.appendChild(quit);
@@ -1045,7 +1047,7 @@ var UpdateObject, MultiAction;
                 else
                     return (parseInt(a.attributes[property]) - parseInt(b.attributes[property]));
             }
-        }
+        };
     }
 
     function Photos_scan(){
@@ -1056,7 +1058,7 @@ var UpdateObject, MultiAction;
 
         venues.sort(dynamicSort((settings.sortOrder === "sortDesc" ? "-" : "") + settings.sortBy.substr(6)));
         for (let i=0; i<venues.length; i++) {
-            let venue = venues[i]
+            let venue = venues[i];
             let vattr = venue.attributes;
             if (typeof (venue) ==='undefined' || vattr.id === null || venue.isSelected()) continue;
 
@@ -1141,7 +1143,7 @@ var UpdateObject, MultiAction;
                         }
                         else if(settings.PhotoViewerShowHiddenPlaces)
                             $(this).parent().find('.approvedImage.pvImage').css('border-color', '#fff'); //turn the border white on the images that are not in a PUR
-                    }
+                    };
                 }(venue, venueDiv), false);
                 venueDiv.appendChild(venueCheck);
             }
@@ -1159,7 +1161,7 @@ var UpdateObject, MultiAction;
                     let ven = evt.target.venue;
                     W.model.actionManager.add(new(require("Waze/Action/UpdatePlaceUpdate"))(ven, ven.attributes.venueUpdateRequests[0], true));
                     $($(this).parent().parent()).css("border", "1px solid #0f0");
-                    $($(this).parent().parent().find("img")).css("border", "1px solid #0f0")
+                    $($(this).parent().parent().find("img")).css("border", "1px solid #0f0");
                     $(this).parent().remove();
                 }, false);
                 purActions.appendChild(purApprove);
@@ -1198,7 +1200,7 @@ var UpdateObject, MultiAction;
                     let venueList = [];
                     venueList.push(W.model.venues.objects[id]);
                     W.selectionManager.setSelectedModels(venueList);
-                }
+                };
             }(vattr.geometry.bounds, catalog[i]), false);
             venueDiv.appendChild(venuePos);
             let tmp=document.createElement('div'); tmp.style.clear='both';venueDiv.appendChild(tmp);
@@ -1245,7 +1247,7 @@ var UpdateObject, MultiAction;
                         //W.selectionManager.setSelectedModels(venueList);
                         $("#venue-edit-photos").css('display', 'block');
                         $("#venue-edit-general").css('display', 'none');
-                    }
+                    };
                 }(vattr.images[k].attributes.id, venue, vattr.images[k].attributes.approved), false);
 
                 if(vattr.images[k].attributes.approved){ //Add a trash can icon to delete a picture if the picture is approved on the Place (not a PUR)
@@ -1422,9 +1424,9 @@ var UpdateObject, MultiAction;
             let newCategories = [].concat(selected.attributes.categories);
             let catToAdd;
             if($(`#piePlaceMainItem${itemNum}`).length > 0)
-                catToAdd = $(`#piePlaceMainItem${itemNum}`)[0].getAttribute("data-category")
+                catToAdd = $(`#piePlaceMainItem${itemNum}`)[0].getAttribute("data-category");
             else
-                catToAdd = $(`#piePlaceAreaItem${itemNum}`)[0].getAttribute("data-category")
+                catToAdd = $(`#piePlaceAreaItem${itemNum}`)[0].getAttribute("data-category");
             if(selected.attributes.categories.indexOf(catToAdd) === -1){ //if the category isn't already on the Place, add it
                 newCategories.push(catToAdd);
                 W.model.actionManager.add(new UpdateObject(selected, {categories: newCategories}));
@@ -1486,12 +1488,16 @@ var UpdateObject, MultiAction;
 
         if(!I18n.translations[I18n.locale].date.day_names){
             I18n.translations[I18n.locale].date.day_names = [];
-            _.forOwn(I18n.translations[I18n.locale].date, (v,k) => { if(k.indexOf("day_names_") > -1) { I18n.translations[I18n.locale].date.day_names.push(v)}});
+            _.forOwn(I18n.translations[I18n.locale].date, (v,k) => {
+                if(k.indexOf("day_names_") > -1) {
+                    I18n.translations[I18n.locale].date.day_names.push(v);
+                }
+            });
         }
 
         var englishNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-        var lngDate = I18n.translations[I18n.locale].date.day_names.map(function(value) { return value.toLowerCase(); })
-        var lngFullDate = I18n.translations[I18n.locale].date.abbr_day_names.map(function(value) { return value.toLowerCase(); })
+        var lngDate = I18n.translations[I18n.locale].date.day_names.map(function(value) { return value.toLowerCase(); });
+        var lngFullDate = I18n.translations[I18n.locale].date.abbr_day_names.map(function(value) { return value.toLowerCase(); });
         for (var i = 0; i < englishNames.length; i++) {
             pasteHours = pasteHours.replace(lngDate[i], englishNames[i]);
             pasteHours = pasteHours.replace(lngFullDate[i], englishNames[i]);
@@ -1673,39 +1679,39 @@ var UpdateObject, MultiAction;
     }
 
     function handleNavPointOffScreen() {
-		if (selectedItem !== WazeWrap.getSelectedFeatures().first() ||
-			WazeWrap.Geometry.isGeometryInMapExtent(new OpenLayers.Geometry.Point(ClosestSegmentNavPoint.lonlat.lon, ClosestSegmentNavPoint.lonlat.lat))) {
-			W.map.events.unregister('moveend', window, handleNavPointOffScreen);
-			checkSelection();
-		}
-	}
+        if (selectedItem !== WazeWrap.getSelectedFeatures().first() ||
+            WazeWrap.Geometry.isGeometryInMapExtent(new OpenLayers.Geometry.Point(ClosestSegmentNavPoint.lonlat.lon, ClosestSegmentNavPoint.lonlat.lat))) {
+            W.map.events.unregister('moveend', window, handleNavPointOffScreen);
+            checkSelection();
+        }
+    }
 
     function clearClosesetSegmentLayerFeatures() {
-		return closestSegmentLayer.features.length > 0 && closestSegmentLayer.removeAllFeatures();
-	}
+        return closestSegmentLayer.features.length > 0 && closestSegmentLayer.removeAllFeatures();
+    }
 
     function checkConditions() {
-		var a = W.map.getZoom() > 15,
-			b = W.map.venueLayer.getVisibility(),
-			c = closestSegmentLayer.getVisibility(),
-			d = !$('#map-lightbox > div').is(':visible'),//$('#map-lightbox > div').length === 0,/* Check for HN editing */
+        var a = W.map.getZoom() > 15,
+            b = W.map.venueLayer.getVisibility(),
+            c = closestSegmentLayer.getVisibility(),
+            d = !$('#map-lightbox > div').is(':visible'),//$('#map-lightbox > div').length === 0,/* Check for HN editing */
             e = (WazeWrap.hasSelectedFeatures() && WazeWrap.getSelectedFeatures()[0].model.type !== "bigJunction");
 
-		if (a && b && c && d && e)
-			return true;
-		else
-			return false;
-	}
+        if (a && b && c && d && e)
+            return true;
+        else
+            return false;
+    }
 
-	function drawLine(start, end, lStyle, pStyle) {
-		var lineFeature, pointFeature;
+    function drawLine(start, end, lStyle, pStyle) {
+        var lineFeature, pointFeature;
 
-		lineFeature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.LineString([start, end]), {}, lStyle);
-		pointFeature = new OpenLayers.Feature.Vector(end, {}, pStyle);
-		closestSegmentLayer.addFeatures([lineFeature, pointFeature]);
-	}
+        lineFeature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.LineString([start, end]), {}, lStyle);
+        pointFeature = new OpenLayers.Feature.Vector(end, {}, pStyle);
+        closestSegmentLayer.addFeatures([lineFeature, pointFeature]);
+    }
 
-	function findNearestSegment(navPoint) {
+    function findNearestSegment(navPoint) {
         var closestSegment = {};
         if(navPoint.element)
             navPoint = new OpenLayers.Geometry.Point(W.geometryEditing.activeEditor._navigationPointMarker.lonlat.lon, W.geometryEditing.activeEditor._navigationPointMarker.lonlat.lat);
@@ -1717,7 +1723,7 @@ var UpdateObject, MultiAction;
     }
 
     var placeIsPoint = false;
-	function checkSelection() {
+    function checkSelection() {
 
         var ClosestSegmentNavPoint;
 
@@ -1761,11 +1767,11 @@ var UpdateObject, MultiAction;
                     clearClosesetSegmentLayerFeatures();
                 }
             });
-		}
-	}
+        }
+    }
 
     function removeDragCallbacks() {
-        if(!W.geometryEditing.activeEditor == null){
+        if(W.geometryEditing.activeEditor){
             W.geometryEditing.activeEditor.dragControl.onDrag = function (e, t) {
                 W.geometryEditing.activeEditor.dragVertex.apply(W.geometryEditing.activeEditor, [e, t]);
             };
@@ -1775,8 +1781,8 @@ var UpdateObject, MultiAction;
                 } catch (err) { }
             }
         }
-		clearClosesetSegmentLayerFeatures();
-	}
+        clearClosesetSegmentLayerFeatures();
+    }
 
     function buildNewPlaceList(){
         //Clear out the Places menu
@@ -2133,17 +2139,17 @@ var UpdateObject, MultiAction;
 
     function MouseMoveHandler(e){
         clearLayer();
-		drawCircle(getMousePos900913());
+        drawCircle(getMousePos900913());
     }
 
     function clearLayer() {
-		var layer = W.map.getLayersByName(layerName)[0];
-		layer.removeAllFeatures();
-	}
+        var layer = W.map.getLayersByName(layerName)[0];
+        layer.removeAllFeatures();
+    }
 
     function drawCircle(e){
         var pointFeature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(e.lon, e.lat), {}, pointStyle);
-		W.map.getLayersByName(layerName)[0].addFeatures([pointFeature]);
+        W.map.getLayersByName(layerName)[0].addFeatures([pointFeature]);
     }
 
     function createPlace(pos, category, isPoint){
@@ -2481,7 +2487,7 @@ var UpdateObject, MultiAction;
             coord = currPlaceGeom[i];
             if(i < currPlaceGeom.length-1){
                 coord = coord.transform(W.map.getProjectionObject(), W.map.getOLMap().displayProjection);
-                standardGeom += `${coord.y}, ${coord.x}`
+                standardGeom += `${coord.y}, ${coord.x}`;
                 WMEGeom += `${coord.x} ${coord.y}`;
             }
             WKTGeom += `${coord.x} ${coord.y}`;
@@ -2498,9 +2504,9 @@ var UpdateObject, MultiAction;
         if((WazeWrap.hasPlaceSelected() || WazeWrap.hasMapCommentSelected()) && WazeWrap.getSelectedFeatures()[0].model.geometry.toString().match(/^POLYGON/)){
             let $GeomMods = $(`<div class="form-group" id="pieGeometryMods"><label class="control-label">Geometry</label><div class="controls">${!WazeWrap.hasMapCommentSelected() ? '<i id="pieorthogonalize" title="Orthogonalize" class="fa fa-plus-square-o fa-2x" aria-hidden="true" style="cursor:pointer;"></i> <i id="piesimplifyplace" title="Simplify" class="fa fa-magic fa-2x" aria-hidden="true" style="cursor:pointer;"></i>' : ''} <i id="pierotate" title="Allow rotating the Place" class="fa fa-repeat fa-2x" aria-hidden="true" style="cursor:pointer; color:${settings.Rotate ? 'rgb(0,180,0)': 'black'}"></i> <i id="pieresize" title="Allow resizing the Place. While enabled the geometry cannot be modified" class="fa fa-expand fa-2x" aria-hidden="true" style="cursor:pointer; color:${settings.Resize ? 'rgb(0,180,0)': 'black'}"></i> <i id="pieEditGeom" class="fa fa-pencil-square-o fa-2x" aria-hidden="true" style="cursor:pointer;"></i> <i id="pieClearGeom" title="Clear geometry" class="fa fa-times fa-2x" aria-hidden="true" style="cursor:pointer; color:red;"></i></div></div>`);
             if(W.selectionManager.getSelectedFeatures()[0].model.type === "mapComment")
-                $('#edit-panel > div > div > div.tab-content > form > div:nth-child(3)').after($GeomMods);
+                $('#edit-panel > div > div > div.tab-content form.attributes-form').before($GeomMods);
             else
-                $('#venue-edit-general > form > div:nth-child(4) > div:nth-child(2)').after($GeomMods);
+                $('#venue-edit-general > div.form-group:nth-child(1)').before($GeomMods);
 
             $('#pieorthogonalize').click(function(){
                 OrthogonalizePlace();
@@ -2591,7 +2597,7 @@ var UpdateObject, MultiAction;
                 }
                 else{
                      $crosshairs = $('<div style="float:right; z-index:100; cursor:pointer; top:0; right:0;" id="pieCrosshairs" title="Zoom and center on Place"><i class="fa fa-crosshairs fa-lg" id="placeCrosshair" aria-hidden="true"></i></div>');
-                    $('#venue-edit-general > form > div:nth-child(1) > div:nth-child(2) > label').after($crosshairs);
+                    $('#venue-edit-general wz-text-input[name="name"]').after($crosshairs);
                 }
                 $('#pieCrosshairs').click(function(){
                     CenterOnPlace(WazeWrap.getSelectedFeatures()[0].model, settings.PlaceZoom);
@@ -2622,7 +2628,7 @@ var UpdateObject, MultiAction;
                 var $PLAButton;
                 if(!(_.includes(WazeWrap.getSelectedFeatures()[0].model.attributes.categories,"RESIDENCE_HOME") || _.includes(WazeWrap.getSelectedFeatures()[0].model.attributes.categories,"PARKING_LOT"))){
                     $PLAButton = $('<div style="float:right; z-index:100; cursor:pointer; top:0; right:0;" id="piePLAButton" title="Create a Parking Lot Area for this Place"><i class="fa fa-product-hunt fa-lg" aria-hidden="true"></i></div>');
-                    $('#venue-edit-general > form > div:nth-child(1) > div:nth-child(2) > label').after($PLAButton);
+                    $('#venue-edit-general wz-text-input[name="name"]').after($PLAButton);
 
                     $('#piePLAButton').click(function(){
                         if(!BusinessPLAMode){
@@ -2664,7 +2670,7 @@ var UpdateObject, MultiAction;
             if(WazeWrap.getSelectedFeatures()[0].model.type === "venue" && WazeWrap.getSelectedFeatures()[0].model.attributes.categories.includes("PARKING_LOT")){
                 var $ParkingSpotEstimatorButton;
                 $ParkingSpotEstimatorButton = $('<div style="font-size:18px; float:right; z-index:100; cursor:pointer; top:0; right:0; margin-left:1px; margin-right:1px;" class="PIEParkingSpotEstimatorButton" title="' + I18n.t('pie.prefs.PSEDisplayButtonTitle') + '">#</div>');
-                $('#venue-edit-general > form > div:nth-child(1) > div:nth-child(2) > label').after($ParkingSpotEstimatorButton);
+                $('#venue-edit-general wz-text-input[name="name"]').after($ParkingSpotEstimatorButton);
 
                 $('select[name="estimatedNumberOfSpots"]').before($ParkingSpotEstimatorButton.clone());
 
@@ -3010,7 +3016,7 @@ var UpdateObject, MultiAction;
                 var $PlaceCopyButton;
                 if(!_.includes(WazeWrap.getSelectedFeatures()[0].model.attributes.categories,"RESIDENCE_HOME")){
                     $PlaceCopyButton = $('<div style="float:right; z-index:100; cursor:pointer; top:0; right:0; margin-left:1px; margin-right:1px;" id="pieCopyPlaceButton" title="Creates a copy of this Place"><i class="fa fa-files-o fa-lg" aria-hidden="true"></i></div>');
-                    $('#venue-edit-general wz-text-input[name="name"]').before($PlaceCopyButton);
+                    $('#venue-edit-general wz-text-input[name="name"]').after($PlaceCopyButton);
 
                     $('#pieCopyPlaceButton').click(function(){
                         var PlaceObject = require("Waze/Feature/Vector/Landmark");
@@ -3632,7 +3638,7 @@ var UpdateObject, MultiAction;
             if (!settings.hasOwnProperty(prop))
                 settings[prop] = defaultSettings[prop];
         }*/
-    	settings = $.extend({}, defaultSettings, loadedSettings);
+        settings = $.extend({}, defaultSettings, loadedSettings);
 
         let serverSettings = await WazeWrap.Remote.RetrieveSettings("WME_PIE");
         if(serverSettings && serverSettings.lastSaved > settings.lastSaved)
@@ -3884,12 +3890,12 @@ var UpdateObject, MultiAction;
                 hoursParser: {
                     defaultText: 'Paste Hours Here',
                     AddHours: 'Add hours',
-					AddHoursTitle: 'Add pasted hours to existing',
+                    AddHoursTitle: 'Add pasted hours to existing',
                     ReplaceHours: 'Replace all hours',
-					ReplaceHoursTitle: 'Replace existing hours with pasted hours',
+                    ReplaceHoursTitle: 'Replace existing hours with pasted hours',
                     errorSameOpenClose: 'Same open and close times detected',
                     errorOverlappingHours: 'Overlapping hours detected',
-					errorCannotParse: 'Unable to parse the provided hours'
+                    errorCannotParse: 'Unable to parse the provided hours'
                 },
                 GLE:{
                     closedPlace: 'Google indicates this place is permanently closed.\nVerify with other sources or your editor community before deleting.',
@@ -4006,12 +4012,12 @@ var UpdateObject, MultiAction;
                 hoursParser: {
                     defaultText: 'Paste Hours Here',
                     AddHours: 'Add hours',
-					AddHoursTitle: 'Add pasted hours to existing',
+                    AddHoursTitle: 'Add pasted hours to existing',
                     ReplaceHours: 'Replace all hours',
-					ReplaceHoursTitle: 'Replace existing hours with pasted hours',
+                    ReplaceHoursTitle: 'Replace existing hours with pasted hours',
                     errorSameOpenClose: 'Same open and close times detected',
                     errorOverlappingHours: 'Overlapping hours detected',
-					errorCannotParse: 'Unable to parse the provided hours'
+                    errorCannotParse: 'Unable to parse the provided hours'
                 },
                 GLE:{
                     closedPlace: 'Google indica que este lugar está permanentemente cerrado. Verifica con otras fuentes o tu comunidad de edición antes de eliminar.',
