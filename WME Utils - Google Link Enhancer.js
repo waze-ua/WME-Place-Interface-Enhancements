@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Utils - Google Link Enhancer
 // @namespace    WazeDev
-// @version      2022.08.06.001
+// @version      2022.08.06.002
 // @description  Adds some extra WME functionality related to Google place links.
 // @author       MapOMatic, WazeDev group
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -15,6 +15,7 @@
 /* global Node */
 
 /* eslint-disable */
+/* jshint esversion: 11 */
 
 class GoogleLinkEnhancer {
 
@@ -28,13 +29,13 @@ class GoogleLinkEnhancer {
         this.LINK_CACHE_LIFESPAN_HR = 6; // Remove old links when they exceed this time limit.
         this.DEC = k => atob(atob(k));
         this._enabled = false;
-        this._disableApiUntil; // When a serious API error occurs (OVER_QUERY_LIMIT, REQUEST_DENIED), set this to a time in the future.
+        this._disableApiUntil = null; // When a serious API error occurs (OVER_QUERY_LIMIT, REQUEST_DENIED), set this to a time in the future.
         this._mapLayer = null;
         this._urlOrigin = window.location.origin;
         this._distanceLimit = 400; // Default distance (meters) when Waze place is flagged for being too far from Google place.
         // Area place is calculated as _distanceLimit + <distance between centroid and furthest node>
 
-		this._showTempClosedPOIs = true;
+        this._showTempClosedPOIs = true;
         this.strings = {};
         this.strings.permClosedPlace = 'Google indicates this place is permanently closed.\nVerify with other sources or your editor community before deleting.';
         this.strings.tempClosedPlace = 'Google indicates this place is temporarily closed.';
@@ -110,7 +111,7 @@ class GoogleLinkEnhancer {
                             that._addPoint($(nd).attr('item-id'));
                         }).mouseleave(() => {
                             // When leaving the list item, remove the point.
-                            that._destroyPoint()
+                            that._destroyPoint();
                         });
                     }
                 }
@@ -221,15 +222,15 @@ class GoogleLinkEnhancer {
         this._distanceLimit = value;
         this._processPlaces();
     }
-	
-	get showTempClosedPOIs(){
-		return this._showTempClosedPOIs;
-	}
-	
-	set showTempClosedPOIs(value){
-		this._showTempClosedPOIs = value;
-		this._processPlaces();
-	}
+
+    get showTempClosedPOIs(){
+        return this._showTempClosedPOIs;
+    }
+
+    set showTempClosedPOIs(value){
+        this._showTempClosedPOIs = value;
+        this._processPlaces();
+    }
 
     _onWindowUnload(evt) {
         evt.data._cleanAndSaveLinkCache();
@@ -308,8 +309,8 @@ class GoogleLinkEnhancer {
                             })];
                             let lineStart = geometry.getCentroid();
                             linkInfo.venues.forEach(linkVenue => {
-                                if (linkVenue !== venue
-                                    && !drawnLinks.some(dl => (dl[0] === venue && dl[1] === linkVenue) || (dl[0] === linkVenue && dl[1] === venue))) {
+                                if (linkVenue !== venue &&
+                                    !drawnLinks.some(dl => (dl[0] === venue && dl[1] === linkVenue) || (dl[0] === linkVenue && dl[1] === venue))) {
                                     features.push(
                                         new OpenLayers.Feature.Vector(
                                             new OpenLayers.Geometry.LineString([lineStart, linkVenue.geometry.getCentroid()]),
@@ -318,10 +319,10 @@ class GoogleLinkEnhancer {
                                                 strokeColor: color,
                                                 strokeDashstyle: '12 12',
                                             })
-                                    )
+                                    );
                                     drawnLinks.push([venue, linkVenue]);
                                 }
-                            })
+                            });
                             that._mapLayer.addFeatures(features);
                         }
 
@@ -336,14 +337,14 @@ class GoogleLinkEnhancer {
                         if (results.some(res => that._isLinkTooFar(res, venue))) {
                             strokeColor = '#0FF';
                         } else if (!that.DISABLE_CLOSED_PLACES && results.some(res => res.permclosed)) {
-                            if (/^(\[|\()?(permanently )?closed(\]|\)| -)/i.test(venue.attributes.name)
-                                || /(\(|- |\[)(permanently )?closed(\)|\])?$/i.test(venue.attributes.name)) {
+                            if (/^(\[|\()?(permanently )?closed(\]|\)| -)/i.test(venue.attributes.name) ||
+                                /(\(|- |\[)(permanently )?closed(\)|\])?$/i.test(venue.attributes.name)) {
                                 strokeDashStyle = venue.isPoint() ? '2 6' : '2 16';
                             }
                             strokeColor = '#F00';
                         } else if (!that.DISABLE_CLOSED_PLACES && that._showTempClosedPOIs && results.some(res => res.tempclosed)) {
-                            if (/^(\[|\()?(temporarily )?closed(\]|\)| -)/i.test(venue.attributes.name)
-                                || /(\(|- |\[)(temporarily )?closed(\)|\])?$/i.test(venue.attributes.name)) {
+                            if (/^(\[|\()?(temporarily )?closed(\]|\)| -)/i.test(venue.attributes.name) ||
+                                /(\(|- |\[)(temporarily )?closed(\)|\])?$/i.test(venue.attributes.name)) {
                                 strokeDashStyle = venue.isPoint() ? '2 6' : '2 16';
                             }
                             strokeColor = '#FD3';
@@ -355,7 +356,7 @@ class GoogleLinkEnhancer {
                                 strokeWidth: venue.isPoint() ? '4' : '12',
                                 strokeColor,
                                 strokeDashStyle
-                            }
+                            };
                             const geometry = venue.isPoint() ? venue.geometry.getCentroid() : venue.geometry.clone();
                             that._mapLayer.addFeatures([new OpenLayers.Feature.Vector(geometry, style)]);
                         }
@@ -385,7 +386,13 @@ class GoogleLinkEnhancer {
                 this._disableApiUntil = null;
             }
             return new Promise((resolve, reject) => {
-                $.getJSON(`${this._urlBase}${isNaN(id) ? "place_id" : "cid"}=${id}`).then(json => {
+                let fullUrl = this._urlBase;
+                if (id.startsWith("q=") || id.startsWith("cid=")) {
+                    fullUrl += id;
+                } else {
+                    fullUrl += `place_id=${id}`;
+                }
+                $.getJSON(fullUrl).then(json => {
                     let res = {};
                     if (json.status === "OK") {
                         res.loc = json.result.geometry.location;
@@ -404,7 +411,7 @@ class GoogleLinkEnhancer {
                         } else {
                             res.error = json.status;
                             res.errorMessage = json.error_message;
-                            this._disableApiUntil = Date.now() + 10 * 1000 // Disable api calls for 10 seconds.
+                            this._disableApiUntil = Date.now() + 10 * 1000; // Disable api calls for 10 seconds.
                             console.error(GM_info.script.name + ', Google Link Enhancer disabled for 10 seconds due to API error.', res);
                         }
                     }
@@ -587,7 +594,7 @@ class GoogleLinkEnhancer {
                 } else {
                     this._addPoint(id);
                 }
-            })
+            });
         }
     }
 
@@ -598,7 +605,7 @@ class GoogleLinkEnhancer {
     }
 
     _getIdFromElement($el) {
-        return $el.find('a.url')[0].href.replace('https://maps.google.com/?cid=', '');
+        return $el.find('a.url')[0].href.replace('https://maps.google.com/?', '');
     }
 
     _addHoverEvent($el) {
@@ -616,7 +623,7 @@ class GoogleLinkEnhancer {
         // The idea for this function was hatched here:
         // https://stackoverflow.com/questions/6803521/can-google-maps-places-autocomplete-api-be-used-via-ajax/9856786
 
-        // The head element, where the Google Autocomplete code will insert a tag 
+        // The head element, where the Google Autocomplete code will insert a tag
         // for a javascript file.
         var head = $('head')[0];
         // The name of the method the Autocomplete code uses to insert the tag.
@@ -655,11 +662,11 @@ class GoogleLinkEnhancer {
                                 // Call the original callback so the WME dropdown can do its thing.
                                 originalCallback(data);
                             }
-                        }
+                        };
 
-                        // Add copy all the attributes of the old callback function to the new callback function. 
+                        // Add copy all the attributes of the old callback function to the new callback function.
                         // This prevents the autocomplete functionality from throwing an error.
-                        for (name in originalCallback) {
+                        for (let name in originalCallback) {
                             newCallback[name] = originalCallback[name];
                         }
                         window[names[0]][names[1]] = newCallback;  // Override the JSONP callback

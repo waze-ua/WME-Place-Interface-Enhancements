@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Place Interface Enhancements
 // @namespace    https://greasyfork.org/users/30701-justins83-waze
-// @version      2022.08.06.01
+// @version      2022.08.06.02
 // @description  Enhancements to various Place interfaces
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -43,15 +43,14 @@ var UpdateObject, MultiAction;
 
     var curr_ver = GM_info.script.version;
     var settings = {};
-    var placeMenuSelector = "#primary-toolbar > div > div.toolbar-submenu.toolbar-group.toolbar-group-venues.ItemInactive > menu";//"#edit-buttons > div > div.toolbar-button.waze-icon-place.toolbar-submenu.toolbar-group.toolbar-group-venues.ItemInactive > menu";
-//"#edit-buttons > div > div.toolbar-submenu.toolbar-group.toolbar-group-venues.ItemInactive > menu";
-    var placementMode = false;
+    var placeMenuSelector = "#primary-toolbar > div > div.toolbar-submenu.toolbar-group.toolbar-group-venues.ItemInactive > menu";
+    //var placementMode = false;
     var resCategory = "RESIDENCE_HOME";
     var wazePL;
     let hoursparser;
     let GLE;
     var catalog = [];
-    const updateMessage = "WME update fixes (zoom level)";
+    const updateMessage = "Fixes from waze-ua to support new WME";
     var lastSelectedFeature;
 
     //Layer definitions
@@ -2069,8 +2068,8 @@ var UpdateObject, MultiAction;
         NewPlace.attributes.categoryAttributes.PARKING_LOT.lotType = ["STREET_LEVEL"];
         NewPlace.attributes.categoryAttributes.PARKING_LOT.costType = "FREE";
 
+        var newAttributes, UpdateFeatureAddress = require('Waze/Action/UpdateFeatureAddress');
         if(address){
-            var newAttributes, UpdateFeatureAddress = require('Waze/Action/UpdateFeatureAddress');
             newAttributes = {
                 countryID: address.country.id,
                 stateID: address.state.id,
