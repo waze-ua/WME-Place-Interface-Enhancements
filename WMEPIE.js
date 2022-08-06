@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Place Interface Enhancements
 // @namespace    https://greasyfork.org/users/30701-justins83-waze
-// @version      2022.08.03.01
+// @version      2022.08.06.01
 // @description  Enhancements to various Place interfaces
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -15,7 +15,7 @@
 // @require      https://greasyfork.org/scripts/27023-jscolor/code/JSColor.js
 // @require      https://greasyfork.org/scripts/37486-wme-utils-hoursparser.js
 // @require      https://greasyfork.org/scripts/38421-wme-utils-navigationpoint/code/WME%20Utils%20-%20NavigationPoint.js?version=251065
-// @require      https://greasyfork.org/scripts/39208-wme-utils-google-link-enhancer/code/WME%20Utils%20-%20Google%20Link%20Enhancer.js
+// @require      https://raw.githubusercontent.com/waze-ua/WME-Place-Interface-Enhancements/waze-ua-fixes/WME%20Utils%20-%20Google%20Link%20Enhancer.js
 // @require      https://greasyfork.org/scripts/375202-photo-viewer-db-interface/code/Photo%20Viewer%20DB%20Interface.js
 // @contributionURL https://github.com/WazeDev/Thank-The-Authors
 // @license      GPLv3
@@ -160,7 +160,7 @@ var UpdateObject, MultiAction;
             '</fieldset>',
 
             '<fieldset id="fieldNewPlaces" style="border: 1px solid silver; padding: 8px; border-radius: 4px;">',
-            '<legend style="margin-bottom:0px; border-bottom-style:none;width:auto;"><h4>' + I18n.t('pie.prefs.NewPlaces') + '</h4></legend>',
+            '<legend style="margin-bottom:0px; border-bottom-style:none;width:auto;"><wz-label>' + I18n.t('pie.prefs.NewPlaces') + '</wz-label></legend>',
             '<div id="divEditRPPAfterCreated" class="controls-container pie-controls-container" title="' + I18n.t('pie.prefs.EditRPPAfterCreateTitle') + '"><input type="checkbox" id="_cbEditRPPAfterCreated" class="pieSettingsCheckbox"><label for="_cbEditRPPAfterCreated" style="white-space:pre-line;">' + I18n.t('pie.prefs.EditRPPAfterCreate') + '</label></div>',
             '<div id="divUseStreetFromClosestSeg" class="controls-container pie-controls-container" title="' + I18n.t('pie.prefs.UseStreetFromClosestSegmentTitle') + '"><input type="checkbox" id="_cbUseStreetFromClosestSeg" class="pieSettingsCheckbox"><label for="_cbUseStreetFromClosestSeg" style="white-space:pre-line;">' + I18n.t('pie.prefs.UseStreetFromClosestSegment') + '</label></div>',
             '<div id="divUseCityFromClosestSeg" class="controls-container pie-controls-container" title="' + I18n.t('pie.prefs.UseCityFromClosestSegmentTitle') + '"><input type="checkbox" id="_cbUseCityFromClosestSeg" class="pieSettingsCheckbox"><label for="_cbUseCityFromClosestSeg" style="white-space:pre-line;">' + I18n.t('pie.prefs.UseCityFromClosestSegment') + '</label></div>',
@@ -170,7 +170,7 @@ var UpdateObject, MultiAction;
             '</fieldset>',
 
             '<fieldset id="fieldMapMods" style="border: 1px solid silver; padding: 8px; border-radius: 4px;">',
-            '<legend style="margin-bottom:0px; border-bottom-style:none;width:auto;"><h4>' + I18n.t('pie.prefs.MapChanges') + '</h4></legend>',
+            '<legend style="margin-bottom:0px; border-bottom-style:none;width:auto;"><wz-label>' + I18n.t('pie.prefs.MapChanges') + '</wz-label></legend>',
             '<div id="divShowNames" class="controls-container pie-controls-container" title="' + I18n.t('pie.prefs.ShowPlaceNames') + '"><input type="checkbox" id="_cbShowPlaceNames" class="pieSettingsCheckbox" /><label for="_cbShowPlaceNames">' + I18n.t('pie.prefs.ShowPlaceNames') + '</label></div>',
             '<br><div id="divShowNamesPoint"class="controls-container pie-controls-container" style="padding-left:20px;" title="' + I18n.t('pie.prefs.ShowPointNamesTitle') + '"><input type="checkbox" id="_cbShowPlaceNamesPoint" class="pieSettingsCheckbox" disabled /><label for ="_cbShowPlaceNamesPoint">' + I18n.t('pie.prefs.ShowPointNames') + '</label></div>',
             '<div id="divShowNamesArea"class="controls-container pie-controls-container" style="padding-left:20px;" title="' + I18n.t('pie.prefs.ShowAreaNamesTitle') + '"><input type="checkbox" id="_cbShowPlaceNamesArea" class="pieSettingsCheckbox" disabled /><label for ="_cbShowPlaceNamesArea">' + I18n.t('pie.prefs.ShowAreaNames') + '</label></div>',
