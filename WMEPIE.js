@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Place Interface Enhancements
 // @namespace    https://greasyfork.org/users/30701-justins83-waze
-// @version      2022.08.11.01
+// @version      2022.08.11.02
 // @description  Enhancements to various Place interfaces
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -2487,7 +2487,8 @@ var UpdateObject, MultiAction;
             }
             coord = currPlaceGeom[i];
             if(i < currPlaceGeom.length-1){
-                coord = coord.transform(W.map.getProjectionObject(), W.map.getOLMap().displayProjection);
+                //coord = coord.transform(W.map.getProjectionObject(), W.map.getOLMap().displayProjection);
+                coord = coord.transform(W.map.getProjectionObject(), W.Config.map.projection.remote);
                 standardGeom += `${coord.y}, ${coord.x}`;
                 WMEGeom += `${coord.x} ${coord.y}`;
             }
