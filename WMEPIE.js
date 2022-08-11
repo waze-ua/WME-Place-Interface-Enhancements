@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Place Interface Enhancements
 // @namespace    https://greasyfork.org/users/30701-justins83-waze
-// @version      2022.08.07.01
+// @version      2022.08.11.01
 // @description  Enhancements to various Place interfaces
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -15,7 +15,7 @@
 // @require      https://greasyfork.org/scripts/27023-jscolor/code/JSColor.js
 // @require      https://greasyfork.org/scripts/37486-wme-utils-hoursparser.js
 // @require      https://greasyfork.org/scripts/38421-wme-utils-navigationpoint/code/WME%20Utils%20-%20NavigationPoint.js?version=251065
-// @require      https://raw.githubusercontent.com/waze-ua/WME-Place-Interface-Enhancements/waze-ua-fixes/WME%20Utils%20-%20Google%20Link%20Enhancer.js
+// @require      https://raw.githubusercontent.com/waze-ua/WME-Place-Interface-Enhancements/waze-ua-fixes/GoogleLinkEnhancer.js
 // @require      https://greasyfork.org/scripts/375202-photo-viewer-db-interface/code/Photo%20Viewer%20DB%20Interface.js
 // @contributionURL https://github.com/WazeDev/Thank-The-Authors
 // @license      GPLv3
@@ -50,7 +50,7 @@ var UpdateObject, MultiAction;
     let hoursparser;
     let GLE;
     var catalog = [];
-    const updateMessage = "Fixes from waze-ua to support new WME";
+    const updateMessage = "Fixes from waze-ua + Ukrainian localization added";
     var lastSelectedFeature;
 
     //Layer definitions
@@ -135,7 +135,7 @@ var UpdateObject, MultiAction;
             '<fieldset id="fieldPlacePanel" style="border: 1px solid silver; padding: 8px; border-radius: 4px;">',
             '<legend style="margin-bottom:0px; border-bottom-style:none;width:auto;"><wz-label>' + I18n.t('pie.prefs.PropertiesPanel') + '</wz-label></legend>',
             '<div class="controls-container pie-controls-container" id="divAreaPlaceSizeControls">',
-            '<div id="divShowAreaPlaceSize" class="controls-container pie-controls-container"><input type="checkbox" id="_cbShowAreaPlaceSize" class="pieSettingsCheckbox" /><label for="_cbShowAreaPlaceSize">' + I18n.t('pie.prefs.ShowAreaPlaceSize') + '</label></div>',
+            '<div id="divShowAreaPlaceSize" class="controls-container pie-controls-container"><input type="checkbox" id="_cbShowAreaPlaceSize" class="pieSettingsCheckbox" /><label for="_cbShowAreaPlaceSize" style="white-space:pre-line;">' + I18n.t('pie.prefs.ShowAreaPlaceSize') + '</label></div>',
             '<div id="divShowAreaPlaceSizeImperial"class="controls-container pie-controls-container" style="padding-left:20px;"><input type="checkbox" id="_cbShowAreaPlaceSizeImperial" class="pieSettingsCheckbox" disabled /><label for ="_cbShowAreaPlaceSizeImperial">' + I18n.t('pie.prefs.ShowImperial') + '</label></div>',
             '<div id="divShowAreaPlaceSizeMetric" class="controls-container pie-controls-container" style="padding-left:20px;"><input type="checkbox" id="_cbShowAreaPlaceSizeMetric" class="pieSettingsCheckbox" disabled /><label for ="_cbShowAreaPlaceSizeMetric">' + I18n.t('pie.prefs.ShowMetric') + '</label></div>',
             '</div>',
@@ -144,7 +144,7 @@ var UpdateObject, MultiAction;
             '<span class="controls-container pie-controls-container" style="padding-left:30px;" title=""><input type="checkbox" id="_cbPlaceLocatorCrosshairProdPL" class="pieSettingsCheckbox" /><label for="_cbPlaceLocatorCrosshairProdPL" style="white-space:pre-line;">' + I18n.t('pie.prefs.ProdPL') + '</label></span></br>',
             '<span class="controls-container pie-controls-container" style="padding-left:30px;" title="' + I18n.t('pie.prefs.ZoomTitle') + '">' + I18n.t('pie.prefs.Zoom') + ' <select id="piePlaceZoom"><option value="22">22</option><option value="21">21</option><option value="20">20</option><option value="19">19</option><option value="18">18</option><option value="17">17</option><option value="16">16</option><option value="15">15</option><option value="14">14</option><option value="13">13</option><option value="12">12</option></select></span></div>',
             '<div class="controls-container pie-controls-container" id="divShowSearchButton" title="' + I18n.t('pie.prefs.ShowAddressSearchTitle') + '"><input type="checkbox" id="_cbShowSearchButton" class="pieSettingsCheckbox"/><label for="_cbShowSearchButton" style="white-space:pre-line;">' + I18n.t('pie.prefs.ShowAddressSearch') + '</label></div>',
-            '<div class="controls-container pie-controls-container" id="divAddPlaceCategoriesButtons"><input type="checkbox" id="_cbAddPlaceCategoriesButtons" class="pieSettingsCheckbox"/><label for="_cbAddPlaceCategoriesButtons" style="white-space:pre-line;" style="white-space:pre-line;">' + I18n.t('pie.prefs.ShowPlaceCategoryButtons') + '</label></div>',
+            '<div class="controls-container pie-controls-container" id="divAddPlaceCategoriesButtons"><input type="checkbox" id="_cbAddPlaceCategoriesButtons" class="pieSettingsCheckbox"/><label for="_cbAddPlaceCategoriesButtons" style="white-space:pre-line;">' + I18n.t('pie.prefs.ShowPlaceCategoryButtons') + '</label></div>',
             '<div class="controls-container pie-controls-container" id="divShowParkingLotButton" title="' + I18n.t('pie.prefs.ShowPLAButtonTitle') + '" ><input type="checkbox" id="_cbShowParkingLotButton" class="pieSettingsCheckbox" /><label for="_cbShowParkingLotButton" style="white-space:pre-line;">' + I18n.t('pie.prefs.ShowPLAButton') + '</label></div>',
             '<div class="controls-container pie-controls-container" id="divShowCopyPlaceButton" title="' + I18n.t('pie.prefs.ShowCopyPlaceButtonTitle') + '" ><input type="checkbox" id="_cbShowCopyPlaceButton" class="pieSettingsCheckbox" /><label for="_cbShowCopyPlaceButton" style="white-space:pre-line;">' + I18n.t('pie.prefs.ShowCopyPlaceButton') + '</label></div>',
             '<div class="controls-container pie-controls-container" id="divShowExternalProviderTooltip" title="' + I18n.t('pie.prefs.ShowGPIDTooltipTitle') + '" ><input type="checkbox" id="_cbShowExternalProviderTooltip" class="pieSettingsCheckbox" /><label for="_cbShowExternalProviderTooltip" style="white-space:pre-line;">' + I18n.t('pie.prefs.ShowGPIDTooltip') + '</label></div>',
@@ -170,12 +170,12 @@ var UpdateObject, MultiAction;
 
             '<fieldset id="fieldMapMods" style="border: 1px solid silver; padding: 8px; border-radius: 4px;">',
             '<legend style="margin-bottom:0px; border-bottom-style:none;width:auto;"><wz-label>' + I18n.t('pie.prefs.MapChanges') + '</wz-label></legend>',
-            '<div id="divShowNames" class="controls-container pie-controls-container" title="' + I18n.t('pie.prefs.ShowPlaceNames') + '"><input type="checkbox" id="_cbShowPlaceNames" class="pieSettingsCheckbox" /><label for="_cbShowPlaceNames">' + I18n.t('pie.prefs.ShowPlaceNames') + '</label></div>',
-            '<br><div id="divShowNamesPoint"class="controls-container pie-controls-container" style="padding-left:20px;" title="' + I18n.t('pie.prefs.ShowPointNamesTitle') + '"><input type="checkbox" id="_cbShowPlaceNamesPoint" class="pieSettingsCheckbox" disabled /><label for ="_cbShowPlaceNamesPoint">' + I18n.t('pie.prefs.ShowPointNames') + '</label></div>',
-            '<div id="divShowNamesArea"class="controls-container pie-controls-container" style="padding-left:20px;" title="' + I18n.t('pie.prefs.ShowAreaNamesTitle') + '"><input type="checkbox" id="_cbShowPlaceNamesArea" class="pieSettingsCheckbox" disabled /><label for ="_cbShowPlaceNamesArea">' + I18n.t('pie.prefs.ShowAreaNames') + '</label></div>',
-            '<br><div id="divShowNamesPLA"class="controls-container pie-controls-container" style="padding-left:20px;" title="' + I18n.t('pie.prefs.ShowPLANameTitle') + '"><input type="checkbox" id="_cbShowPlaceNamesPLA" class="pieSettingsCheckbox" disabled /><label for ="_cbShowPlaceNamesPLA">' + I18n.t('pie.prefs.ShowPLAName') + '</label></div>',
-            '<br><div id="divShowNamesLock"class="controls-container pie-controls-container" style="padding-left:20px;" title="' + I18n.t('pie.prefs.ShowLockLevelTitle') + '"><input type="checkbox" id="_cbShowPlaceNamesLock" class="pieSettingsCheckbox" disabled /><label for ="_cbShowPlaceNamesLock">' + I18n.t('pie.prefs.ShowLockLevel') + '</label></div>',
-            `<br><div id="divhidePlaceNamesWhenPlacesHidden" class="controls-container pie-controls-container" style="padding-left:20px;" title="${I18n.t('pie.prefs.hidePlaceNamesWhenPlacesHiddenTitle')}"><input type="checkbox" id="_cbhidePlaceNamesWhenPlacesHidden" class="pieSettingsCheckbox" disabled /><label for="_cbhidePlaceNamesWhenPlacesHidden">${I18n.t('pie.prefs.hidePlaceNamesWhenPlacesHidden')}</label></div>`,
+            '<div id="divShowNames" class="controls-container pie-controls-container" title="' + I18n.t('pie.prefs.ShowPlaceNames') + '"><input type="checkbox" id="_cbShowPlaceNames" class="pieSettingsCheckbox" /><label for="_cbShowPlaceNames" style="white-space:pre-line;">' + I18n.t('pie.prefs.ShowPlaceNames') + '</label></div>',
+            '<br><div id="divShowNamesPoint"class="controls-container pie-controls-container" style="padding-left:20px;" title="' + I18n.t('pie.prefs.ShowPointNamesTitle') + '"><input type="checkbox" id="_cbShowPlaceNamesPoint" class="pieSettingsCheckbox" disabled /><label for ="_cbShowPlaceNamesPoint" style="white-space:pre-line;">' + I18n.t('pie.prefs.ShowPointNames') + '</label></div>',
+            '<div id="divShowNamesArea"class="controls-container pie-controls-container" style="padding-left:20px;" title="' + I18n.t('pie.prefs.ShowAreaNamesTitle') + '"><input type="checkbox" id="_cbShowPlaceNamesArea" class="pieSettingsCheckbox" disabled /><label for ="_cbShowPlaceNamesArea" style="white-space:pre-line;">' + I18n.t('pie.prefs.ShowAreaNames') + '</label></div>',
+            '<br><div id="divShowNamesPLA"class="controls-container pie-controls-container" style="padding-left:20px;" title="' + I18n.t('pie.prefs.ShowPLANameTitle') + '"><input type="checkbox" id="_cbShowPlaceNamesPLA" class="pieSettingsCheckbox" disabled /><label for ="_cbShowPlaceNamesPLA" style="white-space:pre-line;">' + I18n.t('pie.prefs.ShowPLAName') + '</label></div>',
+            '<br><div id="divShowNamesLock"class="controls-container pie-controls-container" style="padding-left:20px;" title="' + I18n.t('pie.prefs.ShowLockLevelTitle') + '"><input type="checkbox" id="_cbShowPlaceNamesLock" class="pieSettingsCheckbox" disabled /><label for ="_cbShowPlaceNamesLock" style="white-space:pre-line;">' + I18n.t('pie.prefs.ShowLockLevel') + '</label></div>',
+            `<br><div id="divhidePlaceNamesWhenPlacesHidden" class="controls-container pie-controls-container" style="padding-left:20px;" title="${I18n.t('pie.prefs.hidePlaceNamesWhenPlacesHiddenTitle')}"><input type="checkbox" id="_cbhidePlaceNamesWhenPlacesHidden" class="pieSettingsCheckbox" disabled /><label for="_cbhidePlaceNamesWhenPlacesHidden" style="white-space:pre-line;">${I18n.t('pie.prefs.hidePlaceNamesWhenPlacesHidden')}</label></div>`,
             '<div id="divPlaceNamesFontCustomization" class="controls-container pie-controls-container" style="padding-left:20px;">',
             I18n.t('pie.prefs.FontSize') + ' <input type="text" size="1" id="piePlaceNameFontSize"/>px</br>',
             I18n.t('pie.prefs.FontColor') + ' <button class="jscolor {valueElement:null,hash:true,closable:true}" style="width:15px; height:15px;border:2px solid black" id="colorPickerFont"></button></br>',
@@ -187,7 +187,7 @@ var UpdateObject, MultiAction;
             '<div id="divShowNavPointClosestSegmentOnHover" class="controls-container pie-controls-container" title=""><input type="checkbox" id="_cbShowNavPointClosestSegmentOnHover" class="pieSettingsCheckbox" /><label for="_cbShowNavPointClosestSegmentOnHover" style="white-space:pre-line;">' + I18n.t('pie.prefs.ShowNavPointClosestSegmentOnHover') + '</label></div>',
             '<div id="divShowClosestSegmentSelected" class="controls-container pie-controls-container" title=""><input type="checkbox" id="_cbShowClosestSegmentSelected" class="pieSettingsCheckbox" /><label for="_cbShowClosestSegmentSelected" style="white-space:pre-line;">' + I18n.t('pie.prefs.ShowClosestSegmentSelected') + '</label></div>',
             '<div id="divEnableGLE" class="controls-container pie-controls-container" title="' + I18n.t('pie.prefs.EnableGLETitle') + '"><input type="checkbox" id="_cbEnableGLE" class="pieSettingsCheckbox"/><label for="_cbEnableGLE" style="white-space:pre-line;">' + I18n.t('pie.prefs.EnableGLE') + '</label></div>',
-            '<div id="divGLEShowTempClosed" class="controls-container pie-controls-container" style="padding-left:20px;" title=""><input type="checkbox" id="_cbGLEShowTempClosed" class="pieSettingsCheckbox" disabled/><label for="_cbGLEShowTempClosed">' + I18n.t('pie.prefs.GLEShowTempClosed') + '</label></div>',
+            '<div id="divGLEShowTempClosed" class="controls-container pie-controls-container" style="padding-left:20px;" title=""><input type="checkbox" id="_cbGLEShowTempClosed" class="pieSettingsCheckbox" disabled/><label for="_cbGLEShowTempClosed" style="white-space:pre-line;">' + I18n.t('pie.prefs.GLEShowTempClosed') + '</label></div>',
             '<div id="divOpenPUR" class="controls-container pie-controls-container" title="' + I18n.t('pie.prefs.OpenPURTitle') + '"><input type="checkbox" id="_cbOpenPUR" class="pieSettingsCheckbox"/><label for="_cbOpenPUR" style="white-space:pre-line;">' + I18n.t('pie.prefs.OpenPUR') + '</label></div>',
             '<div id="divEnablePhotoViewer" class="controls-container pie-controls-container" title="' + I18n.t('pie.prefs.PhotoViewerTitle') + '"><input type="checkbox" id="_cbEnablePhotoViewer" class="pieSettingsCheckbox"/><label for="_cbEnablePhotoViewer" style="white-space:pre-line;">' + I18n.t('pie.prefs.PhotoViewer') + '</label></div>',
             '<div id="divEnlargeGeoHandles" class="controls-container pie-controls-container" title="' + I18n.t('pie.prefs.EnlargeGeoHandlesTitle') + '"><input type="checkbox" id="_cbEnlargeGeoHandles" class="pieSettingsCheckbox"/><label for="_cbEnlargeGeoHandles" style="white-space:pre-line;">' + I18n.t('pie.prefs.EnlargeGeoHandles') + '</label></div>',
@@ -4154,7 +4154,131 @@ var UpdateObject, MultiAction;
                     badLink: "Lien Google non valide. Veuillez l'enlever.",
                     tooFar: "Le Lieu lié à Google se trouve à plus de {0} mètres du lieu Waze. Veuillez vérifier que le lien est correct."
                 }
-             }
+             },
+              uk: {
+                prefs: {
+                    title: 'Place Interface Enhancements',
+                    ShowAreaPlaceSize: 'Показувати площу POI',
+                    ShowImperial: 'в дюймах',
+                    ShowMetric: 'в метрах',
+                    ShowRPPLockButtons: 'Показувати кнопки блокування RPP',
+                    ShowRPPLockButtonsTitle: 'Кнопки блокування RPP',
+                    ShowPlaceLocatorCrosshair: 'Показувати кнопку центровки POI',
+                    ShowPlaceLocatorCrosshairTitle: 'Центрує POI на екрані та встановлює заданий масштаб',
+                    Zoom: 'Масштаб',
+                    ZoomTitle: 'Масштабувати після центрування POI',
+                    ShowAddressSearch: 'Показувати кнопку пошуку адреси',
+                    ShowAddressSearchTitle: 'Відображає лупу біля адреси місця. Натискання цієї кнопки вставляє адресу у поле пошуку редактора',
+                    ShowPlaceCategoryButtons: 'Показувати кнопки швидкого вибору категорій',
+                    ShowPLAButton: 'Показувати кнопку створення парковки',
+                    ShowPLAButtonTitle: 'Запускає режим створення парковки та автоматично вставляє назву після завершення',
+                    ShowCopyPlaceButton: 'Показувати кнопку копіювання POI',
+                    ShowCopyPlaceButtonTitle: 'Копіює вибране POI з ідентичними налаштуваннями',
+                    ShowGPIDTooltip: 'Показувати підказку від зовнішнього провайдера',
+                    ShowGPIDTooltipTitle: 'Відображає підказку з інформацією від зовнішнього провайдера',
+                    NewPlaces: 'Нові POI',
+                    EditRPPAfterCreate: 'Редагувати адресу RPP після створення',
+                    EditRPPAfterCreateTitle: 'Автоматично відкриває блок адреси RPP та переносить фокус у поле вводу номера будинку',
+                    UseStreetFromClosestSegment: 'Брати назву вулиці з найближчого сегменту',
+                    UseStreetFromClosestSegmentTitle: 'Знаходить назву вулиці з найближчого видимого сегмента та вставляє в адресу нового місця',
+                    UseCityFromClosestSegment: 'Брати назву НП з найближчого сегменту',
+                    UseCityFromClosestSegmentTitle: "Знаходить назву НП з найближчого видимого сегмента та вставляє в адресу нового місця",
+                    ClosestSegmentAltCity: 'Шукати назву НП в альт., якщо основна назва \'Без НП\'',
+                    ClosestSegmentAltCityTitle: 'Коли основна назва сегменту має \'Без НП\', то спробувати знайти назву НП в альтернативі',
+                    ClosestSegmentIgnorePLRUnnamedPR: "Ігнорувати PLR та безіменні PR, якщо беруться дані з найближчого сегмента",
+                    ClosestSegmentIgnorePLRUnnamedPRTitle: "Коли шукаємо найближчий сегмент, парковки та привати будуть ігноровані",
+                    LockLevel: 'Рівень блокування',
+                    LockLevelTitle: 'Рівень блокування, який автоматично буде встановлено для нових POI',
+                    MapChanges: 'Налаштування мапи',
+                    ShowPlaceNames: 'Показувати назви POI',
+                    ShowPlaceNamesTitle: '',
+                    ShowPointNames: 'Показувати назви POI-точок',
+                    ShowPointNamesTitle: 'Відображатиме текст з назвою під POI',
+                    ShowAreaNames: 'Показувати назви POI-областей',
+                    ShowAreaNamesTitle: 'Відображатиме текст з назвою в середині POI',
+                    ShowLockLevel: 'Показувати рівень блокування',
+                    ShowLockLevelTitle: 'Відображатиме рівень блокування POI',
+                    ShowPLAName: 'Показувати назву PLA',
+                    ShowPLANameTitle: '',
+                    Item: 'Пункт',
+                    PlaceMenuCustomization: 'Налаштування меню POI',
+                    ClearDescription: 'Показувати кнопку очищення опису',
+                    ClearDescriptionTitle: 'Додає кнопку Очистити у верхньому правому куті поля опису, натискання якої очищає весь текст',
+                    PropertiesPanel: 'Панель налаштувань',
+                    FontSize: 'Розмір шрифту',
+                    FontColor: 'Колір шрифту',
+                    Bold: 'Жирний',
+                    FontOutlineColor: 'Колір контуру шрифту',
+                    FontOutlineWidth: 'Ширина контуру шрифту',
+                    ProdPL: 'Примусово брати локатор з прод. версії',
+                    MoveAddress: 'Перенести панель адреси нагору',
+                    MoveAddressTitle: 'Переносить панель редагування адреси на верх панелі редагування',
+                    MoveHNEntry: 'Перенести ХН перед назвою вулиці',
+                    MoveHNEntryTitle: 'Переносить поле редагування номеру будинку перед полем редагування назви вулиці',
+                    ShowParkingSpaceEstimatorTool: 'Показувати інструмент парковок',
+                    ShowParkingSpaceEstimatorToolTitle: 'Відображає кнопку запуску інструменту налаштування парковок',
+                    PSEParkingSpaceEstimator: 'Налаштування парковки',
+                    PSELayoutType: 'Форма парковки',
+                    PSE90degree: '90 градусів',
+                    PSEAngled: 'кутова',
+                    PSEEstimatedNumOfSpots: 'Орієнтовна кіл-ть місць: ',
+                    PSESet: 'Встановити',
+                    PSESpotWidth: 'Ширина місця (м)',
+                    PSECal: 'розрах.',
+                    PSEDraw90DegreeTitle: 'Натисніть, щоб провести лінію через всю парковку під кутом 90 градусів. Двічі клацніть, щоб завершити малювання та виміряти проміжки.',
+                    PSEDrawAngledTitle: 'Натисніть, щоб накреслити лінію через всю кутову парковку. Двічі клацніть, щоб завершити малювання та виміряти проміжки.',
+                    PSEShowPSEButton: 'Показувати кнопку інструменту парковок',
+                    PSEShowPSEButtonTitle: 'Відображає кнопку запуску інструменту налаштування парковок',
+                    PSEDisplayButtonTitle: 'Відкрити інструмент налаштування парковок',
+                    ShowNavPointClosestSegmentOnHover: 'Показувати ТФ та точки на найближчому сегменті при наведенні',
+                    ShowClosestSegmentSelected: 'Відображення лінії від ТФ до точки на найближчому сегменті',
+                    EnableGLE: 'Увімкнути Google Link Enhancer',
+                    EnableGLETitle: 'Підсвічування закритих POI Google червоним кольором, POI Google > 400 м від Waze POI блакитним кольором, недійсні посилання Google пурпуровим, багаторазово пов’язані POI Google помаранчевим, уже пов’язані POI сірим (меню автозаповнення)',
+                    OpenPUR: 'Автоматично відкривати PUR',
+                    OpenPURTitle: 'Автоматично відкривати PUR для обраного POI',
+                    HidePaymentType: 'Сховати Способи оплати',
+                    HidePaymentTypeTitle: 'Приховує розділ Способи оплати, якщо встановлено значення вартості "Безкоштовно"',
+                    GeometryMods: 'Увімкнути кнопки зміни геометрії',
+                    GeometryModsTitle: 'Вмикає можливості зміни геометрії, як то: ортогоналізація, обертання чи зміна розміру (збільшення/зменшення) POI-області',
+                    SimplifyFactor: 'Коефіцієнт спрощення',
+                    SimplifyFactorTitle: 'Чим більший коефіцієнт спрощення, тим більше вузлів буде видалено',
+                    PhotoViewer: 'Увімкнути переглядач фото',
+                    PhotoViewerTitle: '',
+                    HideShoppingServices: 'Сховати пропозиції підкатегорій "Покупки/Послуги"',
+                    HideSHoppingServicesTitle: '',
+                    EnlargeGeoHandles: 'Збільшити вузли геометрії POI',
+                    EnlargeGeoHandlesTitle: 'Робить вузли (точки) геометрії об\'єкту POI більшими, щоб їх було легше захопити для зміни розміру',
+                    hidePlaceNamesWhenPlacesHidden: 'Сховати назви для прихованих POI',
+                    hidePlaceNamesWhenPlacesHiddenTitle: 'Якщо ввімкнено, POI, які приховано (через фільтр або ярлик POI в області приховування), не відображатиме свою назву на мапі',
+                    GLEShowTempClosed: 'Підсвічувати тимчасово зачинені POI',
+                    GLEShowTempClosedTitle: 'Підсвічувати тимчасово зачинені місця'
+                },
+                filter: {
+                    PlaceFilterPanel: 'Фільтр POI',
+                    filter: 'Фільтр',
+                    Hide: 'Сховати',
+                    Show: 'Показувати лише'
+                },
+                hoursParser: {
+                    defaultText: 'Вкажіть години роботи',
+                    AddHours: 'Додати години',
+                    AddHoursTitle: 'Додати вказані години роботи замість існуючих',
+                    ReplaceHours: 'Змінити усі години роботи',
+                    ReplaceHoursTitle: 'Замінити всі години роботи на нове значення',
+                    errorSameOpenClose: 'Перетин часу роботи з часом закриття',
+                    errorOverlappingHours: 'Перетин часу роботи з часом закриття. Перевірте часи роботи',
+                    errorCannotParse: 'Неможливо проаналізувати вказані години'
+                },
+                GLE:{
+                    closedPlace: 'Google повідомляє, що це місце закрито назавжди.\nПеревірте в інших джерелах перед видаленням.',
+                    multiLinked: 'Злінковано більше ніж один раз - видаліть дублікат.',
+                    linkedToThisPlace: 'Вже злінковано з цим місцем',
+                    linkedNearby: 'Вже злінковано з цим місцем поруч',
+                    linkedToXPlaces: 'Злінковано з {0} POI',
+                    badLink: 'Недійсне посилання Google. Будь ласка, видаліть його.',
+                    tooFar: 'Це місце Google на відстані більше {0} метрів від POI Waze. Перевiрте правильність.',
+                }
+            }
         });
     }
 

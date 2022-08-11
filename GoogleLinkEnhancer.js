@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Utils - Google Link Enhancer
 // @namespace    WazeDev
-// @version      2022.08.06.002
+// @version      2022.08.10.002
 // @description  Adds some extra WME functionality related to Google place links.
 // @author       MapOMatic, WazeDev group
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -262,7 +262,7 @@ class GoogleLinkEnhancer {
     _isLinkTooFar(link, venue) {
         if (link.loc) {
             let linkPt = new OpenLayers.Geometry.Point(link.loc.lng, link.loc.lat);
-            linkPt.transform(W.map.getOLMap().displayProjection, W.map.getProjectionObject());
+            linkPt.transform(W.Config.map.projection.remote, W.map.getProjectionObject());
             let venuePt;
             let distanceLimit;
             if (venue.isPoint()) {
@@ -286,7 +286,7 @@ class GoogleLinkEnhancer {
         try {
             if (this._enabled) {
                 let that = this;
-                let projFrom = W.map.getOLMap().displayProjection;
+                let projFrom = W.Config.map.projection.remote; // W.map.getOLMap().displayProjection;
                 let projTo = W.map.getProjectionObject();
                 let mapExtent = W.map.getExtent();
                 // Get a list of already-linked id's
@@ -520,7 +520,7 @@ class GoogleLinkEnhancer {
             if (!link.notFound) {
                 let coord = link.loc;
                 let poiPt = new OpenLayers.Geometry.Point(coord.lng, coord.lat);
-                poiPt.transform(W.map.getOLMap().displayProjection, W.map.getProjectionObject());
+                poiPt.transform(W.Config.map.projection.remote, W.map.getProjectionObject());
                 let placeGeom = this._getSelectedFeatures()[0].geometry.getCentroid();
                 let placePt = new OpenLayers.Geometry.Point(placeGeom.x, placeGeom.y);
                 let ext = W.map.getExtent();
